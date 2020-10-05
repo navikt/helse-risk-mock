@@ -11,6 +11,7 @@ internal class RiskMockRiver(
     private val rapidsConnection: RapidsConnection
 ) : River.PacketListener {
 
+    private val log = LoggerFactory.getLogger("RiskMockRiver")
     private val sikkerlogg = LoggerFactory.getLogger("tjenestekall")
 
     companion object {
@@ -31,13 +32,21 @@ internal class RiskMockRiver(
         sikkerlogg.error("forstod ikke $behov med melding\n${problems.toExtendedReport()}")
     }
 
-    data class Risikovurdering(val ufullstendig: Boolean, val arbeidsuførhetvurdering: List<String>)
+    data class Risikovurdering(
+        val samletScore: Double,
+        val begrunnelser: List<String>,
+        val ufullstendig: Boolean,
+        val begrunnelserSomAleneKreverManuellBehandling: List<String>
+    )
 
     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
         sikkerlogg.info("mottok melding: ${packet.toJson()}")
+        log.info("besvarer behov for risikovurdering på vedtaksperiode: {}", packet["vedtaksperiodeId"].textValue())
         val risikovurdering = Risikovurdering(
+            samletScore = 10.0,
+            begrunnelser = emptyList(),
             ufullstendig = false,
-            arbeidsuførhetvurdering = emptyList()
+            begrunnelserSomAleneKreverManuellBehandling = emptyList()
         )
         packet["@løsning"] = mapOf(
             behov to objectMapper.convertValue(risikovurdering, ObjectNode::class.java)

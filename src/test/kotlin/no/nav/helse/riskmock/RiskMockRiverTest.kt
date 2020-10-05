@@ -24,7 +24,7 @@ internal class RiskMockRiverTest {
         val løsning = testrapid.inspektør.løsning("Risikovurdering")
         assertFalse(løsning.isMissingOrNull())
         assertEquals(false, løsning["ufullstendig"].booleanValue())
-        assertEquals(0, løsning["arbeidsuførhetvurdering"].size())
+        assertEquals(0, løsning["begrunnelserSomAleneKreverManuellBehandling"].size())
     }
 
     private fun enkeltBehov() =
