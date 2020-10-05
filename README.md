@@ -5,7 +5,7 @@
 Risikovurdering er ikke fullverdig i testmiljøet fordi vi mocker dokumentene inn til Bømlo. Derfor har vi en mockapp
 hvor vi kan styre svarene vi ønsker.
 
-###Bruk:
+#### Bruk:
 Appen holder på et in-memory map over ønsket svar på risikovurdering gitt et fødselsnummer. Dette kan endres med to apikall som nås via autoforward eller manuell port forward (boomer mode):
 - `POST /reset`: Fjerner all eksisterende konfigurasjon
 - `POST /risikovurdering/{fødselsnummer}`: Lagrer et ønsket svar på oppslag gitt et fødselsnummer.
