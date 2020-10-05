@@ -21,11 +21,6 @@ dependencies {
     implementation("com.github.navikt:rapids-and-rivers:fa839faa1c")
 
     testImplementation("io.mockk:mockk:1.10.0")
-    testImplementation("com.github.tomakehurst:wiremock:2.27.1") {
-        exclude(group = "junit")
-    }
-    testImplementation("no.nav:kafka-embedded-env:2.4.0")
-    testImplementation("org.awaitility:awaitility:4.0.3")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
@@ -43,7 +38,7 @@ tasks {
         archiveBaseName.set("app")
 
         manifest {
-            attributes["Main-Class"] = "no.nav.helse.sparkel.institusjonsopphold.AppKt"
+            attributes["Main-Class"] = "no.nav.helse.riskmock.AppKt"
             attributes["Class-Path"] = configurations.runtimeClasspath.get().joinToString(separator = " ") {
                 it.name
             }
