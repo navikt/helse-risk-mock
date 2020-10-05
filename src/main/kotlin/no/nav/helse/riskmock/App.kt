@@ -31,7 +31,7 @@ private val log = LoggerFactory.getLogger("RiskMockApi")
 private val svar = mutableMapOf<String, Risikovurdering>()
 
 class ApplicationBuilder: RapidsConnection.StatusListener {
-    private val rapidsConnection = RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(emptyMap())).withKtorModule {
+    private val rapidsConnection = RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(System.getenv())).withKtorModule {
         install(ContentNegotiation) {
             register(ContentType.Application.Json, JacksonConverter(objectMapper))
         }
