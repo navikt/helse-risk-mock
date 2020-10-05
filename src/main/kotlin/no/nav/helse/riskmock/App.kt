@@ -41,7 +41,7 @@ class ApplicationBuilder: RapidsConnection.StatusListener {
                 svar.clear()
                 call.respond(HttpStatusCode.OK)
             }
-            post("/{fødselsnummer}/svar") {
+            post("/risikovurdering/{fødselsnummer}") {
                 val fødselsnummer = call.parameters["fødselsnummer"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Requesten mangler fødselsnummer")
 
                 val risikovurdering = call.receive<Risikovurdering>()
