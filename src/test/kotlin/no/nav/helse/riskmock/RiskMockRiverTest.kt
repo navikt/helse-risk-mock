@@ -15,7 +15,7 @@ internal class RiskMockRiverTest {
     private val testrapid = TestRapid()
 
     init {
-        RiskMockRiver(testrapid)
+        RiskMockRiver(testrapid, mutableMapOf())
     }
 
     @Test

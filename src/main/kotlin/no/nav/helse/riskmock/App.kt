@@ -3,9 +3,19 @@ package no.nav.helse.riskmock
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.ktor.application.call
+import io.ktor.application.install
+import io.ktor.features.ContentNegotiation
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.jackson.JacksonConverter
+import io.ktor.request.receive
+import io.ktor.response.respond
+import io.ktor.routing.post
+import io.ktor.routing.routing
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
-import java.io.File
+import org.slf4j.LoggerFactory
 
 internal val objectMapper = jacksonObjectMapper()
     .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
@@ -13,8 +23,39 @@ internal val objectMapper = jacksonObjectMapper()
 
 
 fun main() {
-    val app = RapidApplication.create(System.getenv()).apply {
-        RiskMockRiver(this)
+    val applicationBuilder = ApplicationBuilder()
+    applicationBuilder.start()
+}
+
+private val log = LoggerFactory.getLogger("RiskMockApi")
+private val svar = mutableMapOf<String, Risikovurdering>()
+
+class ApplicationBuilder: RapidsConnection.StatusListener {
+    private val rapidsConnection = RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(emptyMap())).withKtorModule {
+        install(ContentNegotiation) {
+            register(ContentType.Application.Json, JacksonConverter(objectMapper))
+        }
+        routing {
+            post("/reset") {
+                log.info("Fjerner alle konfigurerte risikovurderinger")
+                svar.clear()
+            }
+            post("/{fødselsnummer}/svar") {
+                val fødselsnummer = call.parameters["fødselsnummer"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Requesten mangler fødselsnummer")
+
+                val risikovurdering = call.receive<Risikovurdering>()
+                svar[fødselsnummer] = risikovurdering
+                log.info("Oppdatererte mocket risikovurdering for fnr: ${fødselsnummer.substring(4)}*******")
+            }
+        }
+    }.build()
+
+    init {
+        rapidsConnection.register(this)
+        RiskMockRiver(rapidsConnection, svar)
     }
-    app.start()
+
+    fun start() {
+        rapidsConnection.start()
+    }
 }

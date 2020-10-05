@@ -1,4 +1,5 @@
 val junitJupiterVersion = "5.6.2"
+val ktorVersion = "1.3.2"
 
 plugins {
     kotlin("jvm") version "1.3.72"
@@ -19,6 +20,7 @@ repositories {
 
 dependencies {
     implementation("com.github.navikt:rapids-and-rivers:fa839faa1c")
+    implementation("io.ktor:ktor-jackson:$ktorVersion")
 
     testImplementation("io.mockk:mockk:1.10.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
