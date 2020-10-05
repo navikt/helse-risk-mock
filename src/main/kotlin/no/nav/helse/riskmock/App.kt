@@ -39,6 +39,7 @@ class ApplicationBuilder: RapidsConnection.StatusListener {
             post("/reset") {
                 log.info("Fjerner alle konfigurerte risikovurderinger")
                 svar.clear()
+                call.respond(HttpStatusCode.OK)
             }
             post("/{fødselsnummer}/svar") {
                 val fødselsnummer = call.parameters["fødselsnummer"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Requesten mangler fødselsnummer")
@@ -46,6 +47,7 @@ class ApplicationBuilder: RapidsConnection.StatusListener {
                 val risikovurdering = call.receive<Risikovurdering>()
                 svar[fødselsnummer] = risikovurdering
                 log.info("Oppdatererte mocket risikovurdering for fnr: ${fødselsnummer.substring(4)}*******")
+                call.respond(HttpStatusCode.OK)
             }
         }
     }.build()
