@@ -9,6 +9,7 @@ import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.JacksonConverter
+import io.ktor.request.ContentTransformationException
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.post
@@ -30,27 +31,35 @@ fun main() {
 private val log = LoggerFactory.getLogger("RiskMockApi")
 private val svar = mutableMapOf<String, Risikovurdering>()
 
-class ApplicationBuilder: RapidsConnection.StatusListener {
-    private val rapidsConnection = RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(System.getenv())).withKtorModule {
-        install(ContentNegotiation) {
-            register(ContentType.Application.Json, JacksonConverter(objectMapper))
-        }
-        routing {
-            post("/reset") {
-                log.info("Fjerner alle konfigurerte risikovurderinger")
-                svar.clear()
-                call.respond(HttpStatusCode.OK)
+class ApplicationBuilder : RapidsConnection.StatusListener {
+    private val rapidsConnection =
+        RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(System.getenv())).withKtorModule {
+            install(ContentNegotiation) {
+                register(ContentType.Application.Json, JacksonConverter(objectMapper))
             }
-            post("/risikovurdering/{fødselsnummer}") {
-                val fødselsnummer = call.parameters["fødselsnummer"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Requesten mangler fødselsnummer")
+            routing {
+                post("/reset") {
+                    log.info("Fjerner alle konfigurerte risikovurderinger")
+                    svar.clear()
+                    call.respond(HttpStatusCode.OK)
+                }
+                post("/risikovurdering/{fødselsnummer}") {
+                    val fødselsnummer = call.parameters["fødselsnummer"] ?: return@post call.respond(
+                        HttpStatusCode.BadRequest,
+                        "Requesten mangler fødselsnummer"
+                    )
 
-                val risikovurdering = call.receive<Risikovurdering>()
-                svar[fødselsnummer] = risikovurdering
-                log.info("Oppdatererte mocket risikovurdering for fnr: ${fødselsnummer.substring(4)}*******")
-                call.respond(HttpStatusCode.OK)
+                    val risikovurdering = try {
+                        call.receive<Risikovurdering>()
+                    } catch (e: ContentTransformationException) {
+                        return@post call.respond(HttpStatusCode.BadRequest, "Kunne ikke parse payload")
+                    }
+                    svar[fødselsnummer] = risikovurdering
+                    log.info("Oppdatererte mocket risikovurdering for fnr: ${fødselsnummer.substring(4)}*******")
+                    call.respond(HttpStatusCode.OK)
+                }
             }
-        }
-    }.build()
+        }.build()
 
     init {
         rapidsConnection.register(this)
