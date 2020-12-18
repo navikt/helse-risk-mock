@@ -25,7 +25,6 @@ internal class RiskMockRiver(
             validate { it.rejectKey("@løsning") }
             validate { it.requireKey("@id") }
             validate { it.requireKey("fødselsnummer") }
-            validate { it.requireKey("vedtaksperiodeId") }
         }.register(this)
     }
 
@@ -35,7 +34,7 @@ internal class RiskMockRiver(
 
     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
         sikkerlogg.info("mottok melding: ${packet.toJson()}")
-        log.info("besvarer behov for risikovurdering på vedtaksperiode: {}", packet["vedtaksperiodeId"].textValue())
+        log.info("besvarer behov for risikovurdering på id: {}", packet["@id"].textValue())
         val fødselsnummer = packet["fødselsnummer"].asText()
         val risikovurdering = svar.getOrDefault(
             fødselsnummer, Risikovurdering(
