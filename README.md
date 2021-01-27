@@ -10,13 +10,27 @@ Appen holder på et in-memory map over ønsket svar på risikovurdering gitt et 
 - `POST /reset`: Fjerner all eksisterende konfigurasjon
 - `POST /risikovurdering/{fødselsnummer}`: Lagrer et ønsket svar på oppslag gitt et fødselsnummer.
 
-Forventer en payload ála:
-```
+Forventer en payload à la:
+```json
 {
-    "samletScore": 9.0,
-    "begrunnelser": ["8.4 ikke oppfylt"],
-    "ufullstendig": false,
-    "begrunnelserSomAleneKreverManuellBehandling": ["8.4 ikke oppfylt"]
+    "kanGodkjennesAutomatisk": false,
+    "funn": [
+        {
+            "kategori": [
+                "8-4"
+            ],
+            "beskrivelse": "8-4 ikke ok",
+            "kreverSupersaksbehandler": false
+        }
+    ],
+    "kontrollertOk": [
+        {
+            "kategori": [
+                "arbeid"
+            ],
+            "beskrivelse": "jobb ok"
+        }
+    ]
 }
 ```
 
