@@ -55,7 +55,7 @@ class ApplicationBuilder : RapidsConnection.StatusListener {
                         return@post call.respond(HttpStatusCode.BadRequest, "Kunne ikke parse payload")
                     }
                     svar[fødselsnummer] = risikovurdering
-                    log.info("Oppdatererte mocket risikovurdering for fnr: ${fødselsnummer.substring(4)}*******")
+                    log.info("Oppdatererte mocket risikovurdering for fnr: ${fødselsnummer.substring(0, 4)}*******")
                     call.respond(HttpStatusCode.OK)
                 }
             }

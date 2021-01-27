@@ -1,5 +1,6 @@
 package no.nav.helse.riskmock
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageProblems
@@ -38,10 +39,9 @@ internal class RiskMockRiver(
         val fødselsnummer = packet["fødselsnummer"].asText()
         val risikovurdering = svar.getOrDefault(
             fødselsnummer, Risikovurdering(
-                samletScore = 10.0,
-                begrunnelser = emptyList(),
-                ufullstendig = false,
-                begrunnelserSomAleneKreverManuellBehandling = emptyList()
+                kanGodkjennesAutomatisk = true,
+                funn = emptyList(),
+                kontrollertOk = emptyList()
             ).also { log.info("Fant ikke forhåndskonfigurert risikovurdering. Defaulter til en som er OK!") }
         )
         packet["@løsning"] = mapOf(

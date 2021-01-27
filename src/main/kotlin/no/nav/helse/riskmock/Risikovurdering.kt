@@ -1,8 +1,9 @@
 package no.nav.helse.riskmock
 
+import com.fasterxml.jackson.databind.JsonNode
+
 data class Risikovurdering(
-    val samletScore: Double,
-    val begrunnelser: List<String>,
-    val ufullstendig: Boolean,
-    val begrunnelserSomAleneKreverManuellBehandling: List<String>
+    val kanGodkjennesAutomatisk:  Boolean,
+    val funn: List<JsonNode>,
+    val kontrollertOk: List<JsonNode>
 )
