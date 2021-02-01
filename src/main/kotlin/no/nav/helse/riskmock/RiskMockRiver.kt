@@ -37,13 +37,13 @@ internal class RiskMockRiver(
         sikkerlogg.info("mottok melding: ${packet.toJson()}")
         log.info("besvarer behov for risikovurdering på id: {}", packet["@id"].textValue())
         val fødselsnummer = packet["fødselsnummer"].asText()
-        val risikovurdering = svar.getOrDefault(
-            fødselsnummer, Risikovurdering(
+        val risikovurdering = svar.getOrElse(fødselsnummer) {
+            Risikovurdering(
                 kanGodkjennesAutomatisk = true,
                 funn = emptyList(),
                 kontrollertOk = emptyList()
             ).also { log.info("Fant ikke forhåndskonfigurert risikovurdering. Defaulter til en som er OK!") }
-        )
+        }
         packet["@løsning"] = mapOf(
             behov to objectMapper.convertValue(risikovurdering, ObjectNode::class.java)
         )
