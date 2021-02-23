@@ -1,28 +1,20 @@
 val junitJupiterVersion = "5.6.2"
-val ktorVersion = "1.3.2"
+val ktorVersion = "1.5.0"
 
 plugins {
-    kotlin("jvm") version "1.3.72"
-}
-
-buildscript {
-    dependencies {
-        classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
-    }
+    kotlin("jvm") version "1.4.20"
 }
 
 repositories {
     mavenCentral()
-    maven("https://packages.confluent.io/maven/")
     maven("https://kotlin.bintray.com/ktor")
     maven("https://jitpack.io")
 }
 
 dependencies {
-    implementation("com.github.navikt:rapids-and-rivers:fa839faa1c")
+    implementation("com.github.navikt:rapids-and-rivers:1.5e3ca6a")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
 
-    testImplementation("io.mockk:mockk:1.10.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
@@ -30,10 +22,10 @@ dependencies {
 
 tasks {
     compileKotlin {
-        kotlinOptions.jvmTarget = "12"
+        kotlinOptions.jvmTarget = "14"
     }
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "12"
+        kotlinOptions.jvmTarget = "14"
     }
 
     named<Jar>("jar") {
@@ -63,6 +55,6 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "6.5.1"
+        gradleVersion = "6.8.3"
     }
 }
