@@ -1,8 +1,8 @@
-val junitJupiterVersion = "5.6.2"
+val junitJupiterVersion = "5.8.2"
 val ktorVersion = "1.5.0"
 
 plugins {
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "1.7.0"
 }
 
 repositories {
@@ -22,10 +22,10 @@ dependencies {
 
 tasks {
     compileKotlin {
-        kotlinOptions.jvmTarget = "14"
+        kotlinOptions.jvmTarget = "17"
     }
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "14"
+        kotlinOptions.jvmTarget = "17"
     }
 
     named<Jar>("jar") {
@@ -55,6 +55,6 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "6.8.3"
+        gradleVersion = "7.4.2"
     }
 }
