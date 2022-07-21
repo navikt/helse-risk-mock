@@ -3,7 +3,7 @@ name: Bygg og deploy
 on:
   push:
     branches:
-      - master
+      - test
 
 jobs:
   set_version:
