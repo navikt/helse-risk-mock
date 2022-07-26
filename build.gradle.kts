@@ -8,8 +8,8 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven("https://kotlin.bintray.com/ktor")
     maven("https://jitpack.io")
+    maven("https://kotlin.bintray.com/ktor")
 }
 
 dependencies {
