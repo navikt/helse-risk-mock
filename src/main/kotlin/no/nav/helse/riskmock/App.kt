@@ -43,6 +43,15 @@ class ApplicationBuilder : RapidsConnection.StatusListener {
                     svar.clear()
                     call.respond(HttpStatusCode.OK)
                 }
+                post("/reset-fnr/{fødselsnummer}") {
+                    val fødselsnummer = call.parameters["fødselsnummer"] ?: return@post call.respond(
+                        HttpStatusCode.BadRequest,
+                        "Requesten mangler fødselsnummer"
+                    )
+                    svar.remove(fødselsnummer)
+                    log.info("Fjernet risikovurdering for fnr: ${fødselsnummer.substring(0, 4)}*******")
+                    call.respond(HttpStatusCode.OK)
+                }
                 post("/risikovurdering/{fødselsnummer}") {
                     val fødselsnummer = call.parameters["fødselsnummer"] ?: return@post call.respond(
                         HttpStatusCode.BadRequest,
