@@ -1,20 +1,29 @@
-val junitJupiterVersion = "5.8.2"
-val ktorVersion = "1.5.0"
-val rapidsAndRiversVersion = "2022.04.05-09.40.11a466d7ac70"
+val junitJupiterVersion = "5.10.0"
+val ktorVersion = "2.3.7"
+val rapidsAndRiversVersion = "2024010209171704183456.6d035b91ffb4"
 
 plugins {
-    kotlin("jvm") version "1.7.0"
+    kotlin("jvm") version "1.9.22"
 }
 
+val githubUser: String by project
+val githubPassword: String by project
 repositories {
     mavenCentral()
-    maven("https://jitpack.io")
-    maven("https://kotlin.bintray.com/ktor")
+    maven {
+        url = uri("https://maven.pkg.github.com/navikt/*")
+        credentials {
+            username = githubUser
+            password = githubPassword
+        }
+    }
+    maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
 }
 
 dependencies {
     implementation("com.github.navikt:rapids-and-rivers:$rapidsAndRiversVersion")
-    implementation("io.ktor:ktor-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
@@ -22,11 +31,8 @@ dependencies {
 }
 
 tasks {
-    compileKotlin {
-        kotlinOptions.jvmTarget = "17"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "17"
+    kotlin {
+        jvmToolchain(21)
     }
 
     named<Jar>("jar") {
@@ -38,24 +44,23 @@ tasks {
                 it.name
             }
         }
-
-        doLast {
-            configurations.runtimeClasspath.get().forEach {
-                val file = File("$buildDir/libs/${it.name}")
-                if (!file.exists())
-                    it.copyTo(file)
-            }
-        }
+    }
+    val copyDeps by registering(Sync::class) {
+        from(configurations.runtimeClasspath)
+        into("libs")
+    }
+    named("assemble") {
+        dependsOn(copyDeps)
     }
 
-    withType<Test> {
+    named<Test>("test") {
         useJUnitPlatform()
         testLogging {
             events("passed", "skipped", "failed")
         }
     }
 
-    withType<Wrapper> {
-        gradleVersion = "7.4.2"
+    wrapper {
+        gradleVersion = "8.5"
     }
 }
