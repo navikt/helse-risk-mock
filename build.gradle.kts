@@ -46,7 +46,7 @@ tasks {
     }
     val copyDeps by registering(Sync::class) {
         from(configurations.runtimeClasspath)
-        into("libs")
+        into("build/libs")
     }
     named("assemble") {
         dependsOn(copyDeps)
