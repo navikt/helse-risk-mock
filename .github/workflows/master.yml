@@ -19,6 +19,8 @@ jobs:
           java-version: 21
       - uses: gradle/gradle-build-action@v2.11.1
       - run: ./gradlew build
+        env:
+            ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
       - uses: nais/docker-build-push@v0
         id: docker-build-push
         with:
