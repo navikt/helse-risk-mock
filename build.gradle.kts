@@ -6,14 +6,13 @@ plugins {
     kotlin("jvm") version "1.9.22"
 }
 
-val githubUser: String by project
 val githubPassword: String by project
 repositories {
     mavenCentral()
     maven {
         url = uri("https://maven.pkg.github.com/navikt/*")
         credentials {
-            username = githubUser
+            username = "x-access-token"
             password = githubPassword
         }
     }
