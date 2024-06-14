@@ -6,10 +6,10 @@ Risikovurdering er ikke fullverdig i testmiljøet fordi vi mocker dokumentene in
 hvor vi kan styre svarene vi ønsker.
 
 #### Bruk:
-Appen holder på et in-memory map over ønsket svar på risikovurdering gitt et fødselsnummer. Dette kan endres med to apikall som nås via autoforward eller manuell port forward (boomer mode):
+Appen holder på et in-memory map over ønskede svar på risikovurdering for et fødselsnummer. Dette kan endres med API-kall via port forwarding:
 - `POST /reset`: Fjerner all eksisterende konfigurasjon
 - `POST /reset-fnr/{fødselsnummer}`: Fjerner eksisterende konfigurasjon for gitt fødselsnummer
-- `POST /risikovurdering/{fødselsnummer}`: Lagrer et ønsket svar på oppslag gitt et fødselsnummer.
+- `POST /risikovurdering/{fødselsnummer}`: Lagrer et ønsket svar på oppslag for et fødselsnummer.
 
 Forventer en payload à la:
 ```json
@@ -17,11 +17,9 @@ Forventer en payload à la:
     "kanGodkjennesAutomatisk": false,
     "funn": [
         {
-            "kategori": [
-                "8-4"
-            ],
-            "beskrivelse": "8-4 ikke ok",
-            "kreverSupersaksbehandler": false
+            "kategori": [],
+            "beskrivelse": "Nytt arbeidsforhold registrert (04.03.2024)",
+            "kreverSupersaksbehandler": true
         }
     ],
     "kontrollertOk": [
@@ -33,6 +31,12 @@ Forventer en payload à la:
         }
     ]
 }
+```
+
+Eksempelvis:
+```shell
+k port-forward risk-mock-849df5786-5zzf9 8080:8080
+curl localhost:8080/risikovurdering/15478308253 -H "Content-Type: application/json" -v -d '{"kanGodkjennesAutomatisk": false, "funn": [{"kategori": [], "beskrivelse": "Nytt arbeidsforhold registrert (04.03.2024)", "kreverSupersaksbehandler": true}], "kontrollertOk": [{"beskrivelse": "Arbeidsgiver er konkurs eller under avvikling", "kategori": []}, {"beskrivelse": "Nyregistrert rolle i næringslivet", "kategori": []}, {"beskrivelse": "Innmeldt inntekt fra ny(e) arbeidsgiver(e)", "kategori": []}, {"beskrivelse": "Inntektsøkning på mer enn 5000 i annet arbeidsforhold", "kategori": []}]}'
 ```
 
 ## Henvendelser
