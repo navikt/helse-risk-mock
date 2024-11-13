@@ -3,7 +3,7 @@ val ktorVersion = "2.3.7"
 val rapidsAndRiversVersion = "2024010209171704183456.6d035b91ffb4"
 
 plugins {
-    kotlin("jvm") version "1.9.22"
+    kotlin("jvm") version "2.0.21"
 }
 
 val githubPassword: String by project
