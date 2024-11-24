@@ -18,17 +18,14 @@ Forventer en payload à la:
     "funn": [
         {
             "kategori": [],
-            "beskrivelse": "Nytt arbeidsforhold registrert (04.03.2024)",
-            "kreverSupersaksbehandler": true
+            "beskrivelse": "Nytt arbeidsforhold registrert (04.03.2024)"
         }
     ],
     "kontrollertOk": [
-        {
-            "kategori": [
-                "arbeid"
-            ],
-            "beskrivelse": "jobb ok"
-        }
+        {"beskrivelse": "Arbeidsgiver er konkurs eller under avvikling", "kategori": []},
+        {"beskrivelse": "Nyregistrert rolle i næringslivet", "kategori": []},
+        {"beskrivelse": "Innmeldt inntekt fra ny(e) arbeidsgiver(e)", "kategori": []},
+        {"beskrivelse": "Inntektsøkning på mer enn 5000 i annet arbeidsforhold", "kategori": []}
     ]
 }
 ```
@@ -36,7 +33,7 @@ Forventer en payload à la:
 Eksempelvis:
 ```shell
 k port-forward risk-mock-849df5786-5zzf9 8080:8080
-curl localhost:8080/risikovurdering/15478308253 -H "Content-Type: application/json" -v -d '{"kanGodkjennesAutomatisk": false, "funn": [{"kategori": [], "beskrivelse": "Nytt arbeidsforhold registrert (04.03.2024)", "kreverSupersaksbehandler": true}], "kontrollertOk": [{"beskrivelse": "Arbeidsgiver er konkurs eller under avvikling", "kategori": []}, {"beskrivelse": "Nyregistrert rolle i næringslivet", "kategori": []}, {"beskrivelse": "Innmeldt inntekt fra ny(e) arbeidsgiver(e)", "kategori": []}, {"beskrivelse": "Inntektsøkning på mer enn 5000 i annet arbeidsforhold", "kategori": []}]}'
+curl localhost:8080/risikovurdering/15478308253 -H "Content-Type: application/json" -v -d '{"kanGodkjennesAutomatisk": false, "funn": [{"kategori": [], "beskrivelse": "Nytt arbeidsforhold registrert (04.03.2024)", "kontrollertOk": [{"beskrivelse": "Arbeidsgiver er konkurs eller under avvikling", "kategori": []}, {"beskrivelse": "Nyregistrert rolle i næringslivet", "kategori": []}, {"beskrivelse": "Innmeldt inntekt fra ny(e) arbeidsgiver(e)", "kategori": []}, {"beskrivelse": "Inntektsøkning på mer enn 5000 i annet arbeidsforhold", "kategori": []}]}'
 ```
 
 ## Henvendelser
