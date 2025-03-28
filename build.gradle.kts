@@ -1,9 +1,10 @@
-val junitJupiterVersion = "5.10.2"
-val ktorVersion = "2.3.7"
-val rapidsAndRiversVersion = "2024010209171704183456.6d035b91ffb4"
+val junitJupiterVersion = "5.12.1"
+val ktorVersion = "3.1.1"
+val rapidsAndRiversVersion = "2025030709111741335066.dc4411f7bc29"
+val rapidsAndRiversTestVersion = "2025.03.10-19.50-d556269c"
 
 plugins {
-    kotlin("jvm") version "2.0.21"
+    kotlin("jvm") version "2.1.20"
 }
 
 val githubPassword: String by project
@@ -24,9 +25,10 @@ dependencies {
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+    testImplementation(platform("org.junit:junit-bom:$junitJupiterVersion"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("com.github.navikt.tbd-libs:rapids-and-rivers-test:$rapidsAndRiversTestVersion")
 }
 
 tasks {
