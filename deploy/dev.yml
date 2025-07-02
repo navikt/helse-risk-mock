@@ -41,3 +41,8 @@ spec:
       destinations:
         - id: elastic
         - id: loki
+  accessPolicy:
+    outbound:
+      rules:
+        - application: logging
+          namespace: nais-system
