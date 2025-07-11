@@ -4,7 +4,7 @@ val rapidsAndRiversVersion = "2025061811051750237542.df739400e55e"
 val rapidsAndRiversTestVersion = "2025.03.10-19.50-d556269c"
 
 plugins {
-    kotlin("jvm") version "2.1.20"
+    kotlin("jvm") version "2.2.0"
 }
 
 val githubPassword: String by project
