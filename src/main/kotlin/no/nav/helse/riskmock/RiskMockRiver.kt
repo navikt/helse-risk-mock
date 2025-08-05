@@ -12,43 +12,54 @@ import org.slf4j.LoggerFactory
 
 internal class RiskMockRiver(
     rapidsConnection: RapidsConnection,
-    private val svar: Map<String, Risikovurdering>
+    private val svar: Map<String, Risikovurdering>,
 ) : River.PacketListener {
-
     private val log = LoggerFactory.getLogger("RiskMockRiver")
     private val sikkerlogg = LoggerFactory.getLogger("tjenestekall")
 
     companion object {
-        const val behov = "Risikovurdering"
+        const val BEHOV = "Risikovurdering"
     }
 
     init {
-        River(rapidsConnection).apply {
-            validate { it.demandAll("@behov", listOf(behov)) }
-            validate { it.rejectKey("@løsning") }
-            validate { it.requireKey("@id") }
-            validate { it.requireKey("fødselsnummer") }
-        }.register(this)
+        River(rapidsConnection)
+            .apply {
+                validate { it.demandAll("@behov", listOf(BEHOV)) }
+                validate { it.rejectKey("@løsning") }
+                validate { it.requireKey("@id") }
+                validate { it.requireKey("fødselsnummer") }
+            }.register(this)
     }
 
-    override fun onError(problems: MessageProblems, context: MessageContext, metadata: MessageMetadata) {
-        sikkerlogg.error("forstod ikke $behov med melding\n${problems.toExtendedReport()}")
+    override fun onError(
+        problems: MessageProblems,
+        context: MessageContext,
+        metadata: MessageMetadata,
+    ) {
+        sikkerlogg.error("forstod ikke $BEHOV med melding\n${problems.toExtendedReport()}")
     }
 
-    override fun onPacket(packet: JsonMessage, context: MessageContext, metadata: MessageMetadata, meterRegistry: MeterRegistry) {
+    override fun onPacket(
+        packet: JsonMessage,
+        context: MessageContext,
+        metadata: MessageMetadata,
+        meterRegistry: MeterRegistry,
+    ) {
         sikkerlogg.info("mottok melding: ${packet.toJson()}")
         log.info("besvarer behov for risikovurdering på id: {}", packet["@id"].textValue())
         val fødselsnummer = packet["fødselsnummer"].asText()
-        val risikovurdering = svar.getOrElse(fødselsnummer) {
-            Risikovurdering(
-                kanGodkjennesAutomatisk = true,
-                funn = emptyList(),
-                kontrollertOk = emptyList()
-            ).also { log.info("Fant ikke forhåndskonfigurert risikovurdering. Defaulter til en som er OK!") }
-        }
-        packet["@løsning"] = mapOf(
-            behov to objectMapper.convertValue(risikovurdering, ObjectNode::class.java)
-        )
+        val risikovurdering =
+            svar.getOrElse(fødselsnummer) {
+                Risikovurdering(
+                    kanGodkjennesAutomatisk = true,
+                    funn = emptyList(),
+                    kontrollertOk = emptyList(),
+                ).also { log.info("Fant ikke forhåndskonfigurert risikovurdering. Defaulter til en som er OK!") }
+            }
+        packet["@løsning"] =
+            mapOf(
+                BEHOV to objectMapper.convertValue(risikovurdering, ObjectNode::class.java),
+            )
         context.publish(packet.toJson())
     }
 }

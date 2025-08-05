@@ -11,7 +11,6 @@ import org.junit.jupiter.api.TestInstance.Lifecycle
 
 @TestInstance(Lifecycle.PER_CLASS)
 internal class RiskMockRiverTest {
-
     private val testrapid = TestRapid()
 
     init {
@@ -41,14 +40,13 @@ internal class RiskMockRiverTest {
         """
 }
 
-fun TestRapid.RapidInspector.meldinger() =
-    (0 until size).map { index -> message(index) }
+fun TestRapid.RapidInspector.meldinger() = (0 until size).map { index -> message(index) }
 
-fun TestRapid.RapidInspector.hendelser(type: String) =
-    meldinger().filter { it.path("@event_name").asText() == type }
+fun TestRapid.RapidInspector.hendelser(type: String) = meldinger().filter { it.path("@event_name").asText() == type }
 
 fun TestRapid.RapidInspector.løsning(behov: String) =
     hendelser("behov")
         .filter { it.hasNonNull("@løsning") }
         .last { it.path("@behov").map(JsonNode::asText).contains(behov) }
-        .path("@løsning").path(behov)
+        .path("@løsning")
+        .path(behov)
