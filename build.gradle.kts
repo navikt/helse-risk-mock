@@ -27,11 +27,17 @@ dependencies {
     testImplementation("com.github.navikt.tbd-libs:rapids-and-rivers-test:2025.03.10-19.50-d556269c")
 }
 
-tasks {
-    kotlin {
-        jvmToolchain(21)
-    }
+kotlin {
+    jvmToolchain(21)
+}
 
+tasks {
+    test {
+        useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
+    }
     named<Jar>("jar") {
         archiveBaseName.set("app")
 
@@ -48,16 +54,5 @@ tasks {
     }
     named("assemble") {
         dependsOn(copyDeps)
-    }
-
-    named<Test>("test") {
-        useJUnitPlatform()
-        testLogging {
-            events("passed", "skipped", "failed")
-        }
-    }
-
-    wrapper {
-        gradleVersion = "8.13"
     }
 }
