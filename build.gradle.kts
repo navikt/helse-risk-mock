@@ -1,8 +1,3 @@
-val junitJupiterVersion = "5.12.1"
-val ktorVersion = "3.1.1"
-val rapidsAndRiversVersion = "2025061811051750237542.df739400e55e"
-val rapidsAndRiversTestVersion = "2025.03.10-19.50-d556269c"
-
 plugins {
     kotlin("jvm") version "2.1.20"
 }
@@ -20,15 +15,16 @@ repositories {
     maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
 }
 
+private val ktorVersion = "3.1.1"
 dependencies {
-    implementation("com.github.navikt:rapids-and-rivers:$rapidsAndRiversVersion")
+    implementation("com.github.navikt:rapids-and-rivers:2025061811051750237542.df739400e55e")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
 
-    testImplementation(platform("org.junit:junit-bom:$junitJupiterVersion"))
+    testImplementation(platform("org.junit:junit-bom:5.12.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("com.github.navikt.tbd-libs:rapids-and-rivers-test:$rapidsAndRiversTestVersion")
+    testImplementation("com.github.navikt.tbd-libs:rapids-and-rivers-test:2025.03.10-19.50-d556269c")
 }
 
 tasks {
