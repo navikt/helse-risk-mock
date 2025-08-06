@@ -18,7 +18,7 @@ repositories {
 
 private val ktorVersion = "3.2.3"
 dependencies {
-    implementation("com.github.navikt:rapids-and-rivers:2025061811051750237542.df739400e55e")
+    implementation("com.github.navikt:rapids-and-rivers:2025080508591754377187.3bb45f5904cf")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
 
