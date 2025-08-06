@@ -25,7 +25,7 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.13.4"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("com.github.navikt.tbd-libs:rapids-and-rivers-test:2025.03.10-19.50-d556269c")
+    testImplementation("com.github.navikt.tbd-libs:rapids-and-rivers-test:2025.06.20-13.05-40af2647")
 }
 
 kotlin {
