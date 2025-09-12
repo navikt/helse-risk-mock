@@ -16,7 +16,7 @@ repositories {
     maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
 }
 
-private val ktorVersion = "3.2.3"
+private val ktorVersion = "3.3.0"
 dependencies {
     implementation("com.github.navikt:rapids-and-rivers:2025080508591754377187.3bb45f5904cf")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
