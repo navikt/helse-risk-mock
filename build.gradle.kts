@@ -18,14 +18,14 @@ repositories {
 
 private val ktorVersion = "3.3.0"
 dependencies {
-    implementation("com.github.navikt:rapids-and-rivers:2025080508591754377187.3bb45f5904cf")
+    implementation("com.github.navikt:rapids-and-rivers:2025091914191758284377.e07ac23cddbd")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
 
     testImplementation(platform("org.junit:junit-bom:5.13.4"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("com.github.navikt.tbd-libs:rapids-and-rivers-test:2025.09.19-13.31-61342e73")
+    testImplementation("com.github.navikt.tbd-libs:rapids-and-rivers-test:2025.09.19-15.24-1a9c113f")
 }
 
 kotlin {
