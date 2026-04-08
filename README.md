@@ -4,7 +4,7 @@
 
 ## Beskrivelse
 
-Risikovurdering er ikke fullverdig i testmiljøet fordi vi mocker dokumentene inn til Bømlo. Derfor har vi en mockapp
+Risikovurdering er ikke fullverdig i testmiljøet fordi vi mocker dokumentene inn til Team SAS. Derfor har vi en mockapp
 hvor vi kan styre svarene vi ønsker.
 
 #### Bruk:
