@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - master
+  schedule:
+    - cron: '0 4 * * 3'
+      timezone: 'Europe/Oslo'
 
 permissions:
     id-token: write
