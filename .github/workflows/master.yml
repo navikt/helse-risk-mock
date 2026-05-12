@@ -4,28 +4,34 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
   schedule:
     - cron: '0 4 * * 3'
       timezone: 'Europe/Oslo'
-
-permissions:
-    id-token: write
+  workflow_dispatch:
 
 jobs:
   build:
-    name: build docker image
+    name: Build docker image
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
-          distribution: temurin
-          java-version: 21
-      - uses: gradle/actions/setup-gradle@v6
+          distribution: 'temurin'
+          java-version: '21.x'
+          cache: 'gradle'
+      - name: Test and build
       - run: ./gradlew build
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: nais/docker-build-push@v0
+      - name: Build container image
+        if: ${{ github.ref_name == 'master' }}
+        uses: nais/docker-build-push@v0
         id: docker-build-push
         with:
           team: tbd
@@ -33,9 +39,12 @@ jobs:
         image: ${{ steps.docker-build-push.outputs.image }}
 
   deployDev:
-    name: deploy to dev
+    name: Deploy to dev
     needs: [build]
     runs-on: ubuntu-latest
+    if: ${{ github.ref_name == 'master' }}
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v6
       - uses: nais/deploy/actions/deploy@v2
