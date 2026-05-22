@@ -20,7 +20,7 @@ repositories {
     }
 }
 
-private val ktorVersion = "3.4.3"
+private val ktorVersion = "3.5.0"
 dependencies {
     implementation("com.github.navikt:rapids-and-rivers:2025091914191758284377.e07ac23cddbd")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
