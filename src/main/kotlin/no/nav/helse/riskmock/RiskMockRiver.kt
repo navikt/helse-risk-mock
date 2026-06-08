@@ -1,6 +1,5 @@
 package no.nav.helse.riskmock
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
 import com.github.navikt.tbd_libs.rapids_and_rivers.River
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageContext
@@ -24,10 +23,14 @@ internal class RiskMockRiver(
     init {
         River(rapidsConnection)
             .apply {
-                validate { it.demandAll("@behov", listOf(BEHOV)) }
-                validate { it.rejectKey("@løsning") }
-                validate { it.requireKey("@id") }
-                validate { it.requireKey("fødselsnummer") }
+                precondition {
+                    it.requireAll("@behov", listOf(BEHOV))
+                    it.forbid("@løsning")
+                }
+                validate {
+                    it.requireKey("@id")
+                    it.requireKey("fødselsnummer")
+                }
             }.register(this)
     }
 
@@ -46,8 +49,8 @@ internal class RiskMockRiver(
         meterRegistry: MeterRegistry,
     ) {
         sikkerlogg.info("mottok melding: ${packet.toJson()}")
-        log.info("besvarer behov for risikovurdering på id: {}", packet["@id"].textValue())
-        val fødselsnummer = packet["fødselsnummer"].asText()
+        log.info("besvarer behov for risikovurdering på id: {}", packet["@id"].asString())
+        val fødselsnummer = packet["fødselsnummer"].asString()
         val risikovurdering =
             svar.getOrElse(fødselsnummer) {
                 Risikovurdering(
@@ -56,10 +59,7 @@ internal class RiskMockRiver(
                     kontrollertOk = emptyList(),
                 ).also { log.info("Fant ikke forhåndskonfigurert risikovurdering. Defaulter til en som er OK!") }
             }
-        packet["@løsning"] =
-            mapOf(
-                BEHOV to objectMapper.convertValue(risikovurdering, ObjectNode::class.java),
-            )
+        packet["@løsning"] = mapOf(BEHOV to risikovurdering)
         context.publish(packet.toJson())
     }
 }

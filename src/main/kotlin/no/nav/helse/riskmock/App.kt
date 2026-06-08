@@ -1,8 +1,6 @@
 package no.nav.helse.riskmock
 
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
@@ -13,11 +11,6 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import no.nav.helse.rapids_rivers.RapidApplication
 import org.slf4j.LoggerFactory
-
-internal val objectMapper =
-    jacksonObjectMapper()
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        .registerModule(JavaTimeModule())
 
 fun main() {
     val applicationBuilder = ApplicationBuilder()
@@ -32,7 +25,7 @@ class ApplicationBuilder : RapidsConnection.StatusListener {
         RapidApplication.create(env = System.getenv(), builder = {
             withKtorModule {
                 install(ContentNegotiation) {
-                    register(ContentType.Application.Json, JacksonConverter(objectMapper))
+                    jackson { registerKotlinModule() }
                 }
                 routing {
                     post("/reset") {
