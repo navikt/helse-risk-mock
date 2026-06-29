@@ -56,10 +56,12 @@ tasks {
                 }
         }
     }
-    val copyDeps by registering(Sync::class) {
-        from(configurations.runtimeClasspath)
-        into("build/libs")
-    }
+    val copyDeps =
+        register<Sync>("copyDeps") {
+            description = "Kopierer alle avhengigheter til libs-mappa"
+            from(configurations.runtimeClasspath)
+            into(layout.buildDirectory.dir("libs"))
+        }
     named("assemble") {
         dependsOn(copyDeps)
     }
