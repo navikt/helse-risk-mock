@@ -3,7 +3,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
 }
 
-private val ktorVersion = "3.5.0"
+private val ktorVersion = "3.5.1"
 private val tbdLibsVersion = "20260526.1506"
 
 dependencies {
