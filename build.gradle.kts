@@ -4,7 +4,7 @@ plugins {
 }
 
 private val ktorVersion = "3.5.1"
-private val tbdLibsVersion = "20260526.1506"
+private val tbdLibsVersion = "20260702.1010"
 
 dependencies {
     implementation("com.github.navikt:rapids-and-rivers:2026051812441779101082")
