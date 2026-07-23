@@ -7,7 +7,7 @@ private val ktorVersion = "3.5.1"
 private val tbdLibsVersion = "20260526.1506"
 
 dependencies {
-    implementation("com.github.navikt:rapids-and-rivers:2026051812441779101082")
+    implementation("com.github.navikt:rapids-and-rivers:2026071513121784113927")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
 
