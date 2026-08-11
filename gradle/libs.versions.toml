@@ -1,0 +1,16 @@
+[versions]
+ktor = "3.5.2"
+tbdLibs = "20260526.1506"
+sasGradlePlugins = "20260807.0944"
+
+[libraries]
+ktor-serialization-jackson = { module = "io.ktor:ktor-serialization-jackson", version.ref = "ktor" }
+ktor-server-contentNegotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+
+rapidsAndRivers = "com.github.navikt:rapids-and-rivers:2026051812441779101082"
+
+tbdLibs-jackson = { module = "com.github.navikt.tbd-libs:jackson", version.ref = "tbdLibs" }
+tbdLibs-rapidsAndRiversTest = { module = "com.github.navikt.tbd-libs:rapids-and-rivers-test", version.ref = "tbdLibs" }
+
+[plugins]
+sas-deployable = { id = "no.nav.helse.sas.sas-deployable", version.ref = "sasGradlePlugins" }
