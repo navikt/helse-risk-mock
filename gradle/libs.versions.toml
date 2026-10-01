@@ -1,6 +1,6 @@
 [versions]
 ktor = "3.6.0"
-tbdLibs = "20260821.0950"
+tbdLibs = "20260930.1309"
 sykepengerGradlePlugins = "20261001.1830"
 
 [libraries]
