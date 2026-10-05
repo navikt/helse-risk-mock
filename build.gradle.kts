@@ -8,7 +8,7 @@ sykepengerDeployable {
 
 dependencies {
     implementation(libs.rapidsAndRivers)
-    implementation(libs.ktor.serialization.jackson)
+    implementation(libs.ktor.serialization.jackson3)
     implementation(libs.ktor.server.contentNegotiation)
 
     testImplementation(libs.tbdLibs.rapidsAndRiversTest)
