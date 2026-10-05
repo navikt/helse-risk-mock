@@ -1,9 +1,8 @@
 package no.nav.helse.riskmock
 
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.ktor.http.*
-import io.ktor.serialization.jackson.*
+import io.ktor.serialization.jackson3.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.request.*
@@ -25,7 +24,7 @@ class ApplicationBuilder : RapidsConnection.StatusListener {
         RapidApplication.create(env = System.getenv(), builder = {
             withKtorModule {
                 install(ContentNegotiation) {
-                    jackson { registerKotlinModule() }
+                    jackson()
                 }
                 routing {
                     post("/reset") {
