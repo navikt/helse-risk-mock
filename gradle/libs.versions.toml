@@ -1,7 +1,7 @@
 [versions]
 ktor = "3.6.0"
-tbdLibs = "20261005.1432"
-sykepengerGradlePlugins = "20261001.1830"
+tbdLibs = "20261013.1613"
+sykepengerGradlePlugins = "20261013.1718"
 
 [libraries]
 ktor-serialization-jackson3 = { module = "io.ktor:ktor-serialization-jackson3", version.ref = "ktor" }
