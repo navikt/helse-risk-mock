@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 
 internal class RiskMockRiver(
     rapidsConnection: RapidsConnection,
-    private val svar: Map<String, Risikovurdering>,
+    private val svar: MockedeRisikovurderinger,
 ) : River.PacketListener {
     private val log = LoggerFactory.getLogger("RiskMockRiver")
     private val sikkerlogg = LoggerFactory.getLogger("tjenestekall")
@@ -30,6 +30,7 @@ internal class RiskMockRiver(
                 validate {
                     it.requireKey("@id")
                     it.requireKey("fødselsnummer")
+                    it.requireKey("organisasjonsnummer")
                 }
             }.register(this)
     }
@@ -51,14 +52,13 @@ internal class RiskMockRiver(
         sikkerlogg.info("mottok melding: ${packet.toJson()}")
         log.info("besvarer behov for risikovurdering på id: {}", packet["@id"].asString())
         val fødselsnummer = packet["fødselsnummer"].asString()
+        val organisasjonsnummer = packet["organisasjonsnummer"].asString()
         val risikovurdering =
-            svar.getOrElse(fødselsnummer) {
-                Risikovurdering(
-                    kanGodkjennesAutomatisk = true,
-                    funn = emptyList(),
-                    kontrollertOk = emptyList(),
-                ).also { log.info("Fant ikke forhåndskonfigurert risikovurdering. Defaulter til en som er OK!") }
-            }
+            svar.finn(fødselsnummer, organisasjonsnummer) ?: Risikovurdering(
+                kanGodkjennesAutomatisk = true,
+                funn = emptyList(),
+                kontrollertOk = emptyList(),
+            ).also { log.info("Fant ikke forhåndskonfigurert risikovurdering. Defaulter til en som er OK!") }
         packet["@løsning"] = mapOf(BEHOV to risikovurdering)
         context.publish(packet.toJson())
     }

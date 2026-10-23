@@ -14,7 +14,7 @@ internal class RiskMockRiverTest {
     private val testrapid = TestRapid()
 
     init {
-        RiskMockRiver(testrapid, mutableMapOf())
+        RiskMockRiver(testrapid, MockedeRisikovurderinger())
     }
 
     @Test
@@ -27,6 +27,23 @@ internal class RiskMockRiverTest {
         assertEquals(0, løsning["kontrollertOk"].size())
     }
 
+    @Test
+    fun `løser ikke behov uten organisasjonsnummer`() {
+        testrapid.reset()
+        testrapid.sendTestMessage(
+            """
+            {
+                "@event_name" : "behov",
+                "@behov" : [ "Risikovurdering" ],
+                "@id" : "id",
+                "@opprettet" : "2020-05-18",
+                "fødselsnummer" : "fnr"
+            }
+            """,
+        )
+        assertEquals(0, testrapid.inspektør.size)
+    }
+
     private fun enkeltBehov() =
         """
         {
@@ -35,7 +52,8 @@ internal class RiskMockRiverTest {
             "@id" : "id",
             "@opprettet" : "2020-05-18",
             "vedtaksperiodeId" : "vedtaksperiodeId",
-            "fødselsnummer" : "fnr"
+            "fødselsnummer" : "fnr",
+            "organisasjonsnummer" : "orgnr"
         }
         """
 }

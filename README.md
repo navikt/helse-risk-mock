@@ -14,6 +14,7 @@ Appen holder på et in-memory map over ønskede svar på risikovurdering for et 
 -   `POST /reset`: Fjerner all eksisterende konfigurasjon
 -   `POST /reset-fnr/{fødselsnummer}`: Fjerner eksisterende konfigurasjon for gitt fødselsnummer
 -   `POST /risikovurdering/{fødselsnummer}`: Lagrer et ønsket svar på oppslag for et fødselsnummer.
+-   `POST /risikovurdering/{fødselsnummer}/{orgnr}`: Lagrer et ønsket svar på oppslag for et fødselsnummer + orgnr.
 
 Forventer en payload à la:
 

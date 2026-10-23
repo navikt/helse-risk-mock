@@ -17,49 +17,14 @@ fun main() {
 }
 
 private val logger = LoggerFactory.getLogger("RiskMockApi")
-private val svar = mutableMapOf<String, Risikovurdering>()
 
 class ApplicationBuilder : RapidsConnection.StatusListener {
+    private val svar = MockedeRisikovurderinger()
+
     private val rapidsConnection =
         RapidApplication.create(env = System.getenv(), builder = {
             withKtorModule {
-                install(ContentNegotiation) {
-                    jackson()
-                }
-                routing {
-                    post("/reset") {
-                        logger.info("Fjerner alle konfigurerte risikovurderinger")
-                        svar.clear()
-                        call.respond(HttpStatusCode.OK)
-                    }
-                    post("/reset-fnr/{fødselsnummer}") {
-                        val fødselsnummer =
-                            call.parameters["fødselsnummer"] ?: return@post call.respond(
-                                HttpStatusCode.BadRequest,
-                                "Requesten mangler fødselsnummer",
-                            )
-                        svar.remove(fødselsnummer)
-                        logger.info("Fjernet risikovurdering for fnr: ${fødselsnummer.substring(0, 4)}*******")
-                        call.respond(HttpStatusCode.OK)
-                    }
-                    post("/risikovurdering/{fødselsnummer}") {
-                        val fødselsnummer =
-                            call.parameters["fødselsnummer"] ?: return@post call.respond(
-                                HttpStatusCode.BadRequest,
-                                "Requesten mangler fødselsnummer",
-                            )
-
-                        val risikovurdering =
-                            try {
-                                call.receive<Risikovurdering>()
-                            } catch (e: ContentTransformationException) {
-                                return@post call.respond(HttpStatusCode.BadRequest, "Kunne ikke parse payload")
-                            }
-                        svar[fødselsnummer] = risikovurdering
-                        logger.info("Oppdatererte mocket risikovurdering for fnr: ${fødselsnummer.substring(0, 4)}*******")
-                        call.respond(HttpStatusCode.OK)
-                    }
-                }
+                riskMockApi(svar)
             }
         })
 
@@ -72,3 +37,67 @@ class ApplicationBuilder : RapidsConnection.StatusListener {
         rapidsConnection.start()
     }
 }
+
+internal fun Application.riskMockApi(svar: MockedeRisikovurderinger) {
+    install(ContentNegotiation) {
+        jackson()
+    }
+    routing {
+        post("/reset") {
+            logger.info("Fjerner alle konfigurerte risikovurderinger")
+            svar.fjernAlle()
+            call.respond(HttpStatusCode.OK)
+        }
+        post("/reset-fnr/{fødselsnummer}") {
+            val fødselsnummer =
+                call.parameters["fødselsnummer"] ?: return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    "Requesten mangler fødselsnummer",
+                )
+            svar.fjern(fødselsnummer)
+            logger.info("Fjernet risikovurdering for fnr: ${fødselsnummer.maskert()}")
+            call.respond(HttpStatusCode.OK)
+        }
+        post("/risikovurdering/{fødselsnummer}") {
+            val fødselsnummer =
+                call.parameters["fødselsnummer"] ?: return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    "Requesten mangler fødselsnummer",
+                )
+            val risikovurdering =
+                try {
+                    call.receive<Risikovurdering>()
+                } catch (e: ContentTransformationException) {
+                    return@post call.respond(HttpStatusCode.BadRequest, "Kunne ikke parse payload")
+                }
+            svar.leggTil(fødselsnummer, risikovurdering)
+            logger.info("Oppdatererte mocket risikovurdering for fnr: ${fødselsnummer.maskert()}")
+            call.respond(HttpStatusCode.OK)
+        }
+        post("/risikovurdering/{fødselsnummer}/{organisasjonsnummer}") {
+            val fødselsnummer =
+                call.parameters["fødselsnummer"] ?: return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    "Requesten mangler fødselsnummer",
+                )
+            val organisasjonsnummer =
+                call.parameters["organisasjonsnummer"] ?: return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    "Requesten mangler organisasjonsnummer",
+                )
+            val risikovurdering =
+                try {
+                    call.receive<Risikovurdering>()
+                } catch (e: ContentTransformationException) {
+                    return@post call.respond(HttpStatusCode.BadRequest, "Kunne ikke parse payload")
+                }
+            svar.leggTil(fødselsnummer, organisasjonsnummer, risikovurdering)
+            logger.info(
+                "Oppdatererte mocket risikovurdering for fnr: ${fødselsnummer.maskert()} og orgnr: $organisasjonsnummer",
+            )
+            call.respond(HttpStatusCode.OK)
+        }
+    }
+}
+
+private fun String.maskert() = "${take(4)}*******"

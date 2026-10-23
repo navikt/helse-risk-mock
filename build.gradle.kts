@@ -13,4 +13,5 @@ dependencies {
 
     testImplementation(libs.tbdLibs.rapidsAndRiversTest)
     testImplementation(libs.tbdLibs.jackson)
+    testImplementation(libs.ktor.server.testHost)
 }
