@@ -53,7 +53,9 @@ internal class RiskMockRiverTest {
             "@opprettet" : "2020-05-18",
             "vedtaksperiodeId" : "vedtaksperiodeId",
             "fødselsnummer" : "fnr",
-            "organisasjonsnummer" : "orgnr"
+            "Risikovurdering" : {
+                "organisasjonsnummer" : "orgnr"
+            }
         }
         """
 }

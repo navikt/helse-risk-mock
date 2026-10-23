@@ -30,7 +30,7 @@ internal class RiskMockRiver(
                 validate {
                     it.requireKey("@id")
                     it.requireKey("fødselsnummer")
-                    it.requireKey("organisasjonsnummer")
+                    it.requireKey("Risikovurdering.organisasjonsnummer")
                 }
             }.register(this)
     }
@@ -52,7 +52,7 @@ internal class RiskMockRiver(
         sikkerlogg.info("mottok melding: ${packet.toJson()}")
         log.info("besvarer behov for risikovurdering på id: {}", packet["@id"].asString())
         val fødselsnummer = packet["fødselsnummer"].asString()
-        val organisasjonsnummer = packet["organisasjonsnummer"].asString()
+        val organisasjonsnummer = packet["$BEHOV.organisasjonsnummer"].asString()
         val risikovurdering =
             svar.finn(fødselsnummer, organisasjonsnummer) ?: Risikovurdering(
                 kanGodkjennesAutomatisk = true,

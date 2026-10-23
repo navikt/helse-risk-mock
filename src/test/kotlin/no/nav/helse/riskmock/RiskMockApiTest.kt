@@ -167,7 +167,9 @@ internal class RiskMockApiTest {
                 "@opprettet" : "2020-05-18T00:00:00",
                 "vedtaksperiodeId" : "${UUID.randomUUID()}",
                 "fødselsnummer" : "$fødselsnummer",
-                "organisasjonsnummer" : "$organisasjonsnummer"
+                "Risikovurdering" : {
+                    "organisasjonsnummer" : "$organisasjonsnummer"
+                }
             }
             """,
         )
