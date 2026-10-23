@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory
 internal class RiskMockRiver(
     rapidsConnection: RapidsConnection,
     private val svar: MockedeRisikovurderinger,
+    private val toggles: Toggles = Toggles(),
 ) : River.PacketListener {
     private val log = LoggerFactory.getLogger("RiskMockRiver")
     private val sikkerlogg = LoggerFactory.getLogger("tjenestekall")
@@ -31,6 +32,9 @@ internal class RiskMockRiver(
                     it.requireKey("@id")
                     it.requireKey("fødselsnummer")
                     it.requireKey("Risikovurdering.organisasjonsnummer")
+                    it.interestedIn("vedtaksperiodeId")
+                    it.interestedIn("Risikovurdering.vedtaksperiodeId")
+                    it.interestedIn("Risikovurdering.perioderMedSammeSkjæringstidspunkt")
                 }
             }.register(this)
     }
@@ -53,13 +57,50 @@ internal class RiskMockRiver(
         log.info("besvarer behov for risikovurdering på id: {}", packet["@id"].asString())
         val fødselsnummer = packet["fødselsnummer"].asString()
         val organisasjonsnummer = packet["$BEHOV.organisasjonsnummer"].asString()
-        val risikovurdering =
-            svar.finn(fødselsnummer, organisasjonsnummer) ?: Risikovurdering(
-                kanGodkjennesAutomatisk = true,
-                funn = emptyList(),
-                kontrollertOk = emptyList(),
-            ).also { log.info("Fant ikke forhåndskonfigurert risikovurdering. Defaulter til en som er OK!") }
-        packet["@løsning"] = mapOf(BEHOV to risikovurdering)
+        val risikovurdering = finnRisikovurdering(fødselsnummer, organisasjonsnummer)
+        val løsning =
+            if (toggles.svarMedAndreVedtaksperioder) {
+                risikovurdering.tilLøsning() + ("andreVedtaksperioder" to andreVedtaksperioder(packet, fødselsnummer))
+            } else {
+                risikovurdering.tilLøsning()
+            }
+        packet["@løsning"] = mapOf(BEHOV to løsning)
         context.publish(packet.toJson())
     }
+
+    private fun andreVedtaksperioder(
+        packet: JsonMessage,
+        fødselsnummer: String,
+    ): List<Map<String, Any>> {
+        val egenVedtaksperiodeId =
+            packet["$BEHOV.vedtaksperiodeId"].takeUnless { it.isMissingNode || it.isNull }?.asString()
+                ?: packet["vedtaksperiodeId"].takeUnless { it.isMissingNode || it.isNull }?.asString()
+        return packet["$BEHOV.perioderMedSammeSkjæringstidspunkt"]
+            .filter { it.path("vedtaksperiodeId").isString }
+            .filter { it["vedtaksperiodeId"].asString() != egenVedtaksperiodeId }
+            .distinctBy { it["vedtaksperiodeId"].asString() }
+            .map { periode ->
+                val vedtaksperiodeId = periode["vedtaksperiodeId"].asString()
+                val organisasjonsnummer = periode.path("organisasjonsnummer").takeIf { it.isString }?.asString()
+                mapOf("vedtaksperiodeId" to vedtaksperiodeId) +
+                    finnRisikovurdering(fødselsnummer, organisasjonsnummer).tilLøsning()
+            }.also { log.info("Svarer ut risikovurdering for {} andre vedtaksperioder", it.size) }
+    }
+
+    private fun finnRisikovurdering(
+        fødselsnummer: String,
+        organisasjonsnummer: String?,
+    ): Risikovurdering =
+        svar.finn(fødselsnummer, organisasjonsnummer) ?: Risikovurdering(
+            kanGodkjennesAutomatisk = true,
+            funn = emptyList(),
+            kontrollertOk = emptyList(),
+        ).also { log.info("Fant ikke forhåndskonfigurert risikovurdering. Defaulter til en som er OK!") }
+
+    private fun Risikovurdering.tilLøsning(): Map<String, Any> =
+        mapOf(
+            "kanGodkjennesAutomatisk" to kanGodkjennesAutomatisk,
+            "funn" to funn,
+            "kontrollertOk" to kontrollertOk,
+        )
 }

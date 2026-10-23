@@ -24,9 +24,9 @@ internal class MockedeRisikovurderinger {
     /** Svar for fnr + orgnr har forrang foran svar som kun er satt for fnr. */
     fun finn(
         fødselsnummer: String,
-        organisasjonsnummer: String,
+        organisasjonsnummer: String?,
     ): Risikovurdering? =
-        forFødselsnummerOgOrganisasjonsnummer[fødselsnummer to organisasjonsnummer]
+        organisasjonsnummer?.let { forFødselsnummerOgOrganisasjonsnummer[fødselsnummer to it] }
             ?: forFødselsnummer[fødselsnummer]
 
     fun fjern(fødselsnummer: String) {

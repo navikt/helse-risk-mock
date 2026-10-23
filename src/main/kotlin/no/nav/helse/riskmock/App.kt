@@ -20,17 +20,19 @@ private val logger = LoggerFactory.getLogger("RiskMockApi")
 
 class ApplicationBuilder : RapidsConnection.StatusListener {
     private val svar = MockedeRisikovurderinger()
+    private val toggles = Toggles.fraEnv(System.getenv())
 
     private val rapidsConnection =
         RapidApplication.create(env = System.getenv(), builder = {
             withKtorModule {
-                riskMockApi(svar)
+                riskMockApi(svar, toggles)
             }
         })
 
     init {
         rapidsConnection.register(this)
-        RiskMockRiver(rapidsConnection, svar)
+        RiskMockRiver(rapidsConnection, svar, toggles)
+        logger.info("Starter med svarMedAndreVedtaksperioder=${toggles.svarMedAndreVedtaksperioder}")
     }
 
     fun start() {
@@ -38,11 +40,28 @@ class ApplicationBuilder : RapidsConnection.StatusListener {
     }
 }
 
-internal fun Application.riskMockApi(svar: MockedeRisikovurderinger) {
+internal fun Application.riskMockApi(
+    svar: MockedeRisikovurderinger,
+    toggles: Toggles = Toggles(),
+) {
     install(ContentNegotiation) {
         jackson()
     }
     routing {
+        get("/toggle/andre-vedtaksperioder") {
+            call.respondText(toggles.svarMedAndreVedtaksperioder.toString())
+        }
+        post("/toggle/andre-vedtaksperioder/{verdi}") {
+            val verdi =
+                when (call.parameters["verdi"]) {
+                    "på", "on", "true" -> true
+                    "av", "off", "false" -> false
+                    else -> return@post call.respond(HttpStatusCode.BadRequest, "Bruk på/av")
+                }
+            toggles.svarMedAndreVedtaksperioder = verdi
+            logger.info("Satte svarMedAndreVedtaksperioder=$verdi")
+            call.respondText(verdi.toString())
+        }
         post("/reset") {
             logger.info("Fjerner alle konfigurerte risikovurderinger")
             svar.fjernAlle()
